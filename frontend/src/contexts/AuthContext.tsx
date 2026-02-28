@@ -24,7 +24,8 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, name: string, username: string, password: string) => Promise<void>;
+  updateProfile: (payload: { name?: string; username?: string }) => Promise<void>;
   logout: () => void;
   refreshAccessToken: () => Promise<string | null>;
 }
@@ -89,11 +90,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearSession, refreshToken]);
 
   const authenticate = useCallback(
-    async (path: "/api/auth/login" | "/api/auth/register", email: string, password: string) => {
+    async (
+      path: "/api/auth/login" | "/api/auth/register",
+      payload:
+        | { email: string; password: string }
+        | { email: string; name: string; username: string; password: string },
+    ) => {
       const data =
         path === "/api/auth/login"
-          ? await authApi.login({ email, password })
-          : await authApi.register({ email, password });
+          ? await authApi.login(payload as { email: string; password: string })
+          : await authApi.register(
+              payload as {
+                email: string;
+                name: string;
+                username: string;
+                password: string;
+              },
+            );
       saveTokens(data.access_token, data.refresh_token);
       setUser(data.user);
     },
@@ -102,16 +115,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string) => {
-      await authenticate("/api/auth/login", email, password);
+      await authenticate("/api/auth/login", { email, password });
     },
     [authenticate],
   );
 
   const register = useCallback(
-    async (email: string, password: string) => {
-      await authenticate("/api/auth/register", email, password);
+    async (email: string, name: string, username: string, password: string) => {
+      await authenticate("/api/auth/register", { email, name, username, password });
     },
     [authenticate],
+  );
+
+  const updateProfile = useCallback(
+    async (payload: { name?: string; username?: string }) => {
+      const updated = await authApi.updateMe(payload);
+      setUser(updated);
+    },
+    [],
   );
 
   const logout = useCallback(() => {
@@ -157,6 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       login,
       register,
+      updateProfile,
       logout,
       refreshAccessToken,
     }),
@@ -168,6 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refreshAccessToken,
       refreshToken,
       register,
+      updateProfile,
       user,
     ],
   );

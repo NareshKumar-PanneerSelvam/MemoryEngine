@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,6 +16,7 @@ from app.schemas.auth import (
     LoginRequest,
     RefreshTokenRequest,
     RegisterRequest,
+    UpdateProfileRequest,
     UserResponse,
 )
 from app.services.auth_service import (
@@ -49,6 +50,7 @@ async def register(
     db: AsyncSession = Depends(get_db),
 ) -> AuthResponse:
     email = payload.email.lower().strip()
+    username = payload.username.lower().strip()
 
     existing_user = await db.execute(select(User).where(User.email == email))
     if existing_user.scalar_one_or_none() is not None:
@@ -57,8 +59,19 @@ async def register(
             detail="Email is already registered",
         )
 
+    existing_username = await db.execute(
+        select(User).where(func.lower(User.username) == username)
+    )
+    if existing_username.scalar_one_or_none() is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Username is already taken",
+        )
+
     user = User(
         email=email,
+        name=payload.name.strip(),
+        username=username,
         password_hash=hash_password(payload.password),
     )
 
@@ -70,7 +83,7 @@ async def register(
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Email is already registered",
+            detail="Email or username already exists",
         )
 
     return _auth_response(user)
@@ -134,3 +147,30 @@ async def get_me(
 ) -> UserResponse:
     return UserResponse.model_validate(current_user)
 
+
+@router.patch("/me", response_model=UserResponse)
+async def update_me(
+    payload: UpdateProfileRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> UserResponse:
+    if payload.username is not None:
+        result = await db.execute(
+            select(User).where(
+                func.lower(User.username) == payload.username,
+                User.id != current_user.id,
+            )
+        )
+        if result.scalar_one_or_none() is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Username is already taken",
+            )
+        current_user.username = payload.username
+
+    if payload.name is not None:
+        current_user.name = payload.name
+
+    await db.commit()
+    await db.refresh(current_user)
+    return UserResponse.model_validate(current_user)
