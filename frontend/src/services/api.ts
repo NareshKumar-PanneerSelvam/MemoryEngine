@@ -14,11 +14,15 @@ export type UserRole = "admin" | "user";
 export interface AuthUser {
   id: string;
   email: string;
+  name: string | null;
+  username: string | null;
   role: UserRole;
 }
 
 export interface RegisterRequest {
   email: string;
+  name: string;
+  username: string;
   password: string;
 }
 
@@ -29,6 +33,11 @@ export interface LoginRequest {
 
 export interface RefreshTokenRequest {
   refresh_token: string;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  username?: string;
 }
 
 export interface AuthResponse {
@@ -203,6 +212,10 @@ export const authApi = {
     const response = await api.get<AuthUser>("/api/auth/me", {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
+    return response.data;
+  },
+  async updateMe(payload: UpdateProfileRequest) {
+    const response = await api.patch<AuthUser>("/api/auth/me", payload);
     return response.data;
   },
 };

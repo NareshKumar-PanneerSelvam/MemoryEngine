@@ -22,6 +22,18 @@ class User(Base, UUIDMixin, TimestampMixin):
         nullable=False,
         index=True,
     )
+
+    name: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
+    username: Mapped[str | None] = mapped_column(
+        String(50),
+        unique=True,
+        nullable=True,
+        index=True,
+    )
     
     password_hash: Mapped[str] = mapped_column(
         String(255),
@@ -40,4 +52,7 @@ class User(Base, UUIDMixin, TimestampMixin):
     )
     
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, email={self.email}, role={self.role})>"
+        return (
+            f"<User(id={self.id}, email={self.email}, "
+            f"username={self.username}, role={self.role})>"
+        )
