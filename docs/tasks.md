@@ -113,14 +113,14 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 3: Authentication Backend
 
-- [ ] 10. Implement password hashing service
+- [x] 10. Implement password hashing service
   - Create `app/services/auth_service.py` with password hashing functions
   - Use bcrypt for password hashing with appropriate salt rounds
   - Implement `hash_password()` and `verify_password()` functions
   - _Requirements: 13.1_
   - **Commit message:** `feat: implement secure password hashing with bcrypt`
 
-- [ ] 11. Implement JWT token service
+- [x] 11. Implement JWT token service
   - Add JWT token generation and validation functions to `app/services/auth_service.py`
   - Use python-jose for JWT operations
   - Implement `create_access_token()`, `create_refresh_token()`, and `decode_token()` functions
@@ -128,7 +128,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.2, 13.3, 13.6_
   - **Commit message:** `feat: implement JWT token generation and validation`
 
-- [ ] 12. Create user registration endpoint
+- [x] 12. Create user registration endpoint
   - Create `app/routers/auth.py` with registration endpoint
   - Implement POST `/api/auth/register` endpoint
   - Validate email format and password strength
@@ -145,7 +145,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Test first user gets admin role
   - _Requirements: 13.1, 16.2_
 
-- [ ] 13. Create user login endpoint
+- [x] 13. Create user login endpoint
   - Add login endpoint to `app/routers/auth.py`
   - Implement POST `/api/auth/login` endpoint
   - Verify email and password
@@ -161,7 +161,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Test JWT token generation
   - _Requirements: 13.2_
 
-- [ ] 14. Implement authentication middleware
+- [x] 14. Implement authentication middleware
   - Create `app/core/auth.py` with `get_current_user()` dependency
   - Extract and validate JWT token from Authorization header
   - Return 401 for missing or invalid tokens
@@ -169,7 +169,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.3, 13.4_
   - **Commit message:** `feat: add JWT authentication middleware for protected routes`
 
-- [ ] 15. Add token refresh endpoint
+- [x] 15. Add token refresh endpoint
   - Add refresh endpoint to `app/routers/auth.py`
   - Implement POST `/api/auth/refresh` endpoint
   - Validate refresh token and issue new access token
@@ -177,7 +177,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.6_
   - **Commit message:** `feat: add token refresh endpoint for extended sessions`
 
-- [ ] 16. Add current user info endpoint
+- [x] 16. Add current user info endpoint
   - Add user info endpoint to `app/routers/auth.py`
   - Implement GET `/api/auth/me` endpoint (protected)
   - Return current user's id, email, and role

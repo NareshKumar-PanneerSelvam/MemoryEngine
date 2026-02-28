@@ -42,7 +42,11 @@ class PageShare(Base, UUIDMixin):
     )
     
     permission_level: Mapped[PermissionLevel] = mapped_column(
-        SQLEnum(PermissionLevel, name="permission_level"),
+        SQLEnum(
+            PermissionLevel,
+            name="permission_level",
+            values_callable=lambda enum_cls: [member.value for member in enum_cls],
+        ),
         nullable=False,
         default=PermissionLevel.VIEW_ONLY,
     )
@@ -66,4 +70,3 @@ class PageShare(Base, UUIDMixin):
     
     def __repr__(self) -> str:
         return f"<PageShare(id={self.id}, page_id={self.page_id}, permission={self.permission_level})>"
-
