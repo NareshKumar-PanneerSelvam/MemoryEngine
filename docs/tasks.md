@@ -65,7 +65,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 10.1, 16.1, 16.7_
   - **Commit message:** `feat: create users table with role-based access control`
 
-- [ ] 5. Create pages table with hierarchy support
+- [x] 5. Create pages table with hierarchy support
   - Create `app/models/page.py` with Page model (id, user_id, parent_id, title, content, timestamps)
   - Add foreign key constraints (user_id → users, parent_id → pages)
   - Add self-reference check constraint (id != parent_id)
