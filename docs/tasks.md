@@ -23,7 +23,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 1: Project Setup
 
-- [ ] 1. Initialize backend project structure
+- [x] 1. Initialize backend project structure
   - Create FastAPI project with Poetry for dependency management
   - Set up project structure: `app/`, `app/models/`, `app/routers/`, `app/services/`, `app/core/`
   - Create `pyproject.toml` with dependencies: fastapi, uvicorn, sqlalchemy, psycopg2-binary, python-jose, passlib, bcrypt, python-multipart, google-generativeai
@@ -34,7 +34,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 9.1, 9.8, 12.2_
   - **Commit message:** `chore: initialize FastAPI backend project structure`
 
-- [ ] 2. Initialize frontend project structure
+- [x] 2. Initialize frontend project structure
   - Create React + TypeScript project with Vite
   - Set up TailwindCSS configuration
   - Create project structure: `src/components/`, `src/pages/`, `src/services/`, `src/hooks/`, `src/types/`, `src/contexts/`
