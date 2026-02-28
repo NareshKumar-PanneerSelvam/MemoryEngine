@@ -47,7 +47,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 2: Database Setup
 
-- [ ] 3. Set up database connection and base models
+- [x] 3. Set up database connection and base models
   - Create `app/core/database.py` with SQLAlchemy async engine and session management
   - Create `app/models/base.py` with declarative base and common fields (id, created_at, updated_at)
   - Set up Alembic for database migrations
