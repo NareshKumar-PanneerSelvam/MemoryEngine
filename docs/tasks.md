@@ -56,7 +56,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 10.1, 10.4, 12.4_
   - **Commit message:** `feat: configure database connection and migration setup`
 
-- [ ] 4. Create users table and model
+- [x] 4. Create users table and model
   - Create `app/models/user.py` with User model (id, email, password_hash, role, timestamps)
   - Define user_role enum type ('admin', 'user')
   - Add unique constraint on email
