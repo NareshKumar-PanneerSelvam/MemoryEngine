@@ -102,7 +102,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 17.1, 17.3, 17.9_
   - **Commit message:** `feat: create page_shares table for selective page sharing`
 
-- [ ] 9. Add database triggers for auto-updates
+- [x] 9. Add database triggers for auto-updates
   - Create `update_updated_at_column()` function to auto-update timestamps
   - Add triggers on users, pages, and flashcards tables for updated_at field
   - Create `assign_first_user_admin()` function to make first user admin
