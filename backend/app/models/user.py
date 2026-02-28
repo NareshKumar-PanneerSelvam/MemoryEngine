@@ -29,7 +29,11 @@ class User(Base, UUIDMixin, TimestampMixin):
     )
     
     role: Mapped[UserRole] = mapped_column(
-        SQLEnum(UserRole, name="user_role"),
+        SQLEnum(
+            UserRole,
+            name="user_role",
+            values_callable=lambda enum_cls: [member.value for member in enum_cls],
+        ),
         nullable=False,
         default=UserRole.USER,
         index=True,
@@ -37,4 +41,3 @@ class User(Base, UUIDMixin, TimestampMixin):
     
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email={self.email}, role={self.role})>"
-
