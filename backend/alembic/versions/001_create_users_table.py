@@ -17,32 +17,41 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Create user_role enum type
-    op.execute("CREATE TYPE user_role AS ENUM ('admin', 'user')")
-    
-    # Create users table
-    op.create_table(
-        'users',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
-        sa.Column('email', sa.String(255), nullable=False, unique=True),
-        sa.Column('password_hash', sa.String(255), nullable=False),
-        sa.Column('role', postgresql.ENUM('admin', 'user', name='user_role'), nullable=False, server_default='user'),
-        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.text('CURRENT_TIMESTAMP')),
-        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.text('CURRENT_TIMESTAMP')),
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+
+    # Create user_role enum type only if it does not already exist.
+    op.execute(
+        """
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+                CREATE TYPE user_role AS ENUM ('admin', 'user');
+            END IF;
+        END$$;
+        """
     )
-    
-    # Create indexes
-    op.create_index('idx_users_email', 'users', ['email'])
-    op.create_index('idx_users_role', 'users', ['role'])
+
+    if not inspector.has_table('users'):
+        op.create_table(
+            'users',
+            sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
+            sa.Column('email', sa.String(255), nullable=False, unique=True),
+            sa.Column('password_hash', sa.String(255), nullable=False),
+            sa.Column('role', postgresql.ENUM('admin', 'user', name='user_role', create_type=False), nullable=False, server_default='user'),
+            sa.Column('created_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.text('CURRENT_TIMESTAMP')),
+            sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.text('CURRENT_TIMESTAMP')),
+        )
+
+    existing_indexes = {index['name'] for index in inspector.get_indexes('users')}
+    if 'idx_users_email' not in existing_indexes:
+        op.create_index('idx_users_email', 'users', ['email'])
+    if 'idx_users_role' not in existing_indexes:
+        op.create_index('idx_users_role', 'users', ['role'])
 
 
 def downgrade() -> None:
-    # Drop indexes
-    op.drop_index('idx_users_role', table_name='users')
-    op.drop_index('idx_users_email', table_name='users')
-    
-    # Drop table
-    op.drop_table('users')
-    
-    # Drop enum type
-    op.execute("DROP TYPE user_role")
+    op.execute("DROP INDEX IF EXISTS idx_users_role")
+    op.execute("DROP INDEX IF EXISTS idx_users_email")
+    op.execute("DROP TABLE IF EXISTS users")
+    op.execute("DROP TYPE IF EXISTS user_role")
