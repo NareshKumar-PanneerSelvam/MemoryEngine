@@ -195,7 +195,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.7_
   - **Commit message:** `feat: create authentication context and hooks`
 
-- [ ] 18. Create API service with authentication
+- [x] 18. Create API service with authentication
   - Create `src/services/api.ts` with axios instance
   - Configure base URL from environment variables
   - Add request interceptor to attach JWT token to headers
@@ -204,7 +204,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 9.1, 13.3_
   - **Commit message:** `feat: create API service with JWT token management`
 
-- [ ] 19. Create registration page UI
+- [x] 19. Create registration page UI
   - Create `src/pages/Register.tsx` with registration form
   - Add form fields: email, password, confirm password
   - Implement client-side validation (email format, password strength, password match)
@@ -216,7 +216,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.1_
   - **Commit message:** `feat: create user registration page with validation`
 
-- [ ] 20. Create login page UI
+- [x] 20. Create login page UI
   - Create `src/pages/Login.tsx` with login form
   - Add form fields: email, password
   - Implement client-side validation
@@ -229,7 +229,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.2_
   - **Commit message:** `feat: create user login page with form validation`
 
-- [ ] 21. Add protected route wrapper
+- [x] 21. Add protected route wrapper
   - Create `src/components/ProtectedRoute.tsx` component
   - Check authentication status before rendering protected pages
   - Redirect to login page if not authenticated
@@ -238,7 +238,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.3_
   - **Commit message:** `feat: add protected route wrapper for authenticated pages`
 
-- [ ] 22. Create navigation header with logout
+- [x] 22. Create navigation header with logout
   - Create `src/components/Header.tsx` with navigation bar
   - Display user email and role
   - Add logout button that clears tokens and redirects to login
@@ -247,7 +247,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 13.2_
   - **Commit message:** `feat: create navigation header with user info and logout`
 
-- [ ] 23. Checkpoint - Test authentication flow
+- [x] 23. Checkpoint - Test authentication flow
   - Ensure all tests pass, ask the user if questions arise.
   - Verify registration creates user and returns tokens
   - Verify login with correct credentials works

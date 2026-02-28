@@ -1,11 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Link, Navigate, Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./contexts/AuthContext";
+import DashboardPage from "./pages/Dashboard";
+import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-slate-50">
+        <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
         </Routes>
       </div>
     </Router>
@@ -13,22 +25,34 @@ function App() {
 }
 
 function HomePage() {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+    <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center px-4 py-8 sm:px-6">
+      <div className="w-full rounded-2xl border border-slate-200 bg-white p-8 shadow-sm sm:p-12">
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
           Welcome to MemoryEngine
         </h1>
-        <p className="text-lg text-gray-600 mb-8">
+        <p className="mt-4 max-w-2xl text-lg text-slate-600">
           AI-powered knowledge management system
         </p>
-        <div className="space-x-4">
-          <button className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            to="/register"
+            className="rounded-lg bg-slate-900 px-6 py-3 font-medium text-white transition hover:bg-slate-700"
+          >
             Get Started
-          </button>
-          <button className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
-            Learn More
-          </button>
+          </Link>
+          <Link
+            to="/login"
+            className="rounded-lg border border-slate-300 bg-white px-6 py-3 font-medium text-slate-800 transition hover:bg-slate-100"
+          >
+            Login
+          </Link>
         </div>
       </div>
     </div>
