@@ -91,7 +91,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 5.1, 6.1, 10.3, 10.5_
   - **Commit message:** `feat: create flashcards table with spaced repetition fields`
 
-- [ ] 8. Create page_shares table for selective sharing
+- [x] 8. Create page_shares table for selective sharing
   - Create `app/models/page_share.py` with PageShare model (id, page_id, owner_id, shared_with_user_id, permission_level, created_at)
   - Define permission_level enum type ('view_only', 'edit')
   - Add foreign key constraints with CASCADE delete
