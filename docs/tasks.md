@@ -82,7 +82,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 1.5, 1.6_
   - **Commit message:** `feat: add database trigger to prevent circular page hierarchies`
 
-- [ ] 7. Create flashcards table
+- [x] 7. Create flashcards table
   - Create `app/models/flashcard.py` with Flashcard model (id, page_id, user_id, question, answer, review fields, timestamps)
   - Add foreign key constraints (page_id → pages, user_id → users) with CASCADE delete
   - Add check constraints (review_count >= 0, mastery_score between 0 and 100)
