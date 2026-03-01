@@ -47,7 +47,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 2: Database Setup
 
-- [ ] 3. Set up database connection and base models
+- [x] 3. Set up database connection and base models
   - Create `app/core/database.py` with SQLAlchemy async engine and session management
   - Create `app/models/base.py` with declarative base and common fields (id, created_at, updated_at)
   - Set up Alembic for database migrations
@@ -56,7 +56,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 10.1, 10.4, 12.4_
   - **Commit message:** `feat: configure database connection and migration setup`
 
-- [ ] 4. Create users table and model
+- [x] 4. Create users table and model
   - Create `app/models/user.py` with User model (id, email, password_hash, role, timestamps)
   - Define user_role enum type ('admin', 'user')
   - Add unique constraint on email
@@ -65,7 +65,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 10.1, 16.1, 16.7_
   - **Commit message:** `feat: create users table with role-based access control`
 
-- [ ] 5. Create pages table with hierarchy support
+- [x] 5. Create pages table with hierarchy support
   - Create `app/models/page.py` with Page model (id, user_id, parent_id, title, content, timestamps)
   - Add foreign key constraints (user_id → users, parent_id → pages)
   - Add self-reference check constraint (id != parent_id)
@@ -75,14 +75,14 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 1.1, 10.2, 10.5_
   - **Commit message:** `feat: create pages table with hierarchical structure support`
 
-- [ ] 6. Add circular reference prevention trigger
+- [x] 6. Add circular reference prevention trigger
   - Create database function `check_page_hierarchy_cycle()` to detect cycles
   - Add trigger on pages table (INSERT and UPDATE) to prevent circular references
   - Test trigger with sample data to ensure cycle detection works
   - _Requirements: 1.5, 1.6_
   - **Commit message:** `feat: add database trigger to prevent circular page hierarchies`
 
-- [ ] 7. Create flashcards table
+- [x] 7. Create flashcards table
   - Create `app/models/flashcard.py` with Flashcard model (id, page_id, user_id, question, answer, review fields, timestamps)
   - Add foreign key constraints (page_id → pages, user_id → users) with CASCADE delete
   - Add check constraints (review_count >= 0, mastery_score between 0 and 100)
@@ -91,7 +91,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 5.1, 6.1, 10.3, 10.5_
   - **Commit message:** `feat: create flashcards table with spaced repetition fields`
 
-- [ ] 8. Create page_shares table for selective sharing
+- [x] 8. Create page_shares table for selective sharing
   - Create `app/models/page_share.py` with PageShare model (id, page_id, owner_id, shared_with_user_id, permission_level, created_at)
   - Define permission_level enum type ('view_only', 'edit')
   - Add foreign key constraints with CASCADE delete
@@ -102,7 +102,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 17.1, 17.3, 17.9_
   - **Commit message:** `feat: create page_shares table for selective page sharing`
 
-- [ ] 9. Add database triggers for auto-updates
+- [x] 9. Add database triggers for auto-updates
   - Create `update_updated_at_column()` function to auto-update timestamps
   - Add triggers on users, pages, and flashcards tables for updated_at field
   - Create `assign_first_user_admin()` function to make first user admin
