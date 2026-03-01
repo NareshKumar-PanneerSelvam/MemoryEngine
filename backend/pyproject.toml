@@ -11,6 +11,8 @@ fastapi = "^0.109.0"
 uvicorn = {extras = ["standard"], version = "^0.27.0"}
 sqlalchemy = "^2.0.25"
 psycopg2-binary = "^2.9.9"
+asyncpg = "^0.30.0"
+greenlet = "^3.2.4"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.6"
