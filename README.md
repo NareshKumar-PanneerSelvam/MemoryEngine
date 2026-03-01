@@ -99,89 +99,84 @@ memory-engine/
 - PostgreSQL (or Supabase account)
 - Google Gemini API key
 
-### Backend Setup
-
-1. Navigate to backend directory:
+### Start Backend
 
 ```bash
 cd backend
-```
 
-2. Install dependencies:
+# one-time poetry install
+curl -sSL https://install.python-poetry.org | python3 -
+export PATH="$HOME/.local/bin:$PATH"
 
-```bash
-poetry install
-```
-
-3. Create `.env` file from template:
-
-```bash
+# project env
 cp .env.example .env
+# update DATABASE_URL, JWT_SECRET, GEMINI_API_KEY
+
+# install deps + run
+POETRY_VIRTUALENVS_IN_PROJECT=1 poetry install --no-root
+POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run alembic upgrade head
+POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run uvicorn app.main:app --reload
 ```
 
-4. Configure environment variables in `.env`:
+Backend: `http://localhost:8000`
 
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/memoryengine
-GEMINI_API_KEY=your_gemini_api_key
-JWT_SECRET=your_secret_key
-JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-REFRESH_TOKEN_EXPIRE_DAYS=7
-CORS_ORIGINS=http://localhost:5173
-```
+Windows (PowerShell):
 
-5. Run database migrations:
+```powershell
+cd backend
 
-```bash
+# one-time poetry install
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+$env:Path += ";$HOME\\AppData\\Roaming\\Python\\Scripts"
+
+Copy-Item .env.example .env
+# update DATABASE_URL, JWT_SECRET, GEMINI_API_KEY
+
+$env:POETRY_VIRTUALENVS_IN_PROJECT="1"
+poetry install --no-root
 poetry run alembic upgrade head
-```
-
-6. Start development server:
-
-```bash
 poetry run uvicorn app.main:app --reload
 ```
 
-Backend will be available at `http://localhost:8000`
-
-### Frontend Setup
-
-1. Navigate to frontend directory:
+### Start Frontend
 
 ```bash
 cd frontend
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-# or
-yarn install
-```
-
-3. Create `.env` file from template:
-
-```bash
 cp .env.example .env
+# VITE_API_URL=http://localhost:8000
+npm install
+npm run dev
 ```
 
-4. Configure environment variables in `.env`:
+Frontend: `http://localhost:5173`
 
-```env
-VITE_API_URL=http://localhost:8000
+Windows (PowerShell):
+
+```powershell
+cd frontend
+Copy-Item .env.example .env
+# VITE_API_URL=http://localhost:8000
+npm install
+npm run dev
 ```
 
-5. Start development server:
+### If `poetry: command not found`
 
 ```bash
-npm run dev
-# or
-yarn dev
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Frontend will be available at `http://localhost:5173`
+To persist:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+```
+
+Windows (PowerShell) temporary fix:
+
+```powershell
+$env:Path += ";$HOME\\AppData\\Roaming\\Python\\Scripts"
+```
 
 ## Development Workflow
 

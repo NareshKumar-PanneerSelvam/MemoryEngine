@@ -257,7 +257,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 5: Pages Backend API
 
-- [ ] 24. Create pages service with CRUD operations
+- [x] 24. Create pages service with CRUD operations
   - Create `app/services/pages_service.py` with page management functions
   - Implement `create_page()`, `get_page()`, `update_page()`, `delete_page()` functions
   - Ensure user can only access their own pages
@@ -265,7 +265,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 9.1, 13.5_
   - **Commit message:** `feat: implement pages service with CRUD operations`
 
-- [ ] 25. Create pages router with basic endpoints
+- [x] 25. Create pages router with basic endpoints
   - Create `app/routers/pages.py` with pages endpoints
   - Implement POST `/api/pages` - create page
   - Implement GET `/api/pages/:id` - get single page
@@ -283,7 +283,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Generate random user IDs and page data
   - Verify cross-user access is denied
 
-- [ ] 26. Add list pages endpoint with hierarchy
+- [x] 26. Add list pages endpoint with hierarchy
   - Add GET `/api/pages` endpoint to pages router
   - Return all pages owned by current user
   - Include parent-child relationships in response
@@ -292,7 +292,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 9.1, 1.3_
   - **Commit message:** `feat: add endpoint to list pages with hierarchy support`
 
-- [ ] 27. Add get child pages endpoint
+- [x] 27. Add get child pages endpoint
   - Add GET `/api/pages/:id/children` endpoint to pages router
   - Return all direct children of specified page
   - Verify user has access to parent page
@@ -307,7 +307,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Verify traversing parent_id always reaches null in finite steps
   - Verify no cycles exist
 
-- [ ] 28. Implement page sharing service
+- [x] 28. Implement page sharing service
   - Create `app/services/sharing_service.py` with sharing functions
   - Implement `share_page()` - create page share with permission level
   - Implement `revoke_share()` - remove page share
@@ -318,7 +318,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 17.2, 17.3, 17.7, 17.8_
   - **Commit message:** `feat: implement page sharing service with permission levels`
 
-- [ ] 29. Add page sharing endpoints
+- [x] 29. Add page sharing endpoints
   - Add POST `/api/pages/:id/share` endpoint - share page with user
   - Add DELETE `/api/pages/:id/share/:userId` endpoint - revoke share
   - Add GET `/api/pages/:id/shares` endpoint - list page shares
@@ -335,7 +335,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Verify view_only users cannot edit
   - Verify edit users can modify pages
 
-- [ ] 30. Update pages list to include shared pages
+- [x] 30. Update pages list to include shared pages
   - Modify GET `/api/pages` endpoint to include shared pages
   - Add `is_shared`, `permission`, and `owner_email` fields to response
   - Distinguish between owned and shared pages
@@ -343,7 +343,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 17.4_
   - **Commit message:** `feat: include shared pages in pages list endpoint`
 
-- [ ] 31. Add page access control middleware
+- [x] 31. Add page access control middleware
   - Create `app/core/permissions.py` with access control functions
   - Implement `require_page_access()` function to check permissions
   - Apply to all page endpoints (get, update, delete)
