@@ -67,7 +67,7 @@ export default function RegisterPage() {
     try {
       setLoading(true);
       await register(normalizedEmail, normalizedName, normalizedUsername, password);
-      navigate("/dashboard", { replace: true });
+      navigate("/pages", { replace: true });
     } catch (err) {
       setError(parseApiError(err));
     } finally {

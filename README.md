@@ -241,26 +241,63 @@ yarn test
 
 ## Deployment
 
-### Database (Supabase)
+This stack supports free-tier deployment:
+- Database: Supabase (Postgres)
+- Backend: Render (free web service)
+- Frontend: Vercel (free static hosting)
 
-1. Create a Supabase project
-2. Get connection string from project settings
-3. Run migrations against Supabase database
+### 1) Database (Supabase)
 
-### Backend (Render)
+1. Create a Supabase project.
+2. Copy the Postgres connection string.
+3. Set backend `DATABASE_URL` in this format:
 
-1. Connect GitHub repository to Render
-2. Create new Web Service
-3. Configure build command: `poetry install && poetry run alembic upgrade head`
-4. Configure start command: `poetry run uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Set environment variables
+```env
+postgresql://postgres:YOUR_URL_ENCODED_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres?sslmode=require
+```
 
-### Frontend (Vercel)
+4. Run migrations against Supabase:
 
-1. Connect GitHub repository to Vercel
-2. Configure build settings (Vite)
-3. Set `VITE_API_URL` environment variable
-4. Deploy
+```bash
+cd backend
+cp .env.production.example .env.production
+# fill values
+POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run alembic upgrade head
+```
+
+### 2) Backend (Render)
+
+1. Connect repository in Render and create a Web Service.
+2. Set Root Directory: `backend`
+3. Build command:
+
+```bash
+POETRY_VIRTUALENVS_IN_PROJECT=1 poetry install --no-root && POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run alembic upgrade head
+```
+
+4. Start command:
+
+```bash
+POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+5. Add env vars from `backend/.env.production.example`.
+6. Set `CORS_ORIGINS` to include your frontend domain.
+
+### 3) Frontend (Vercel)
+
+1. Connect repository in Vercel.
+2. Set Root Directory: `frontend`
+3. Build command: `npm run build`
+4. Output directory: `dist`
+5. Set `VITE_API_URL` to your Render backend URL (see `frontend/.env.production.example`).
+6. Deploy.
+
+### 4) Verify
+
+1. Backend docs: `https://<backend-domain>/docs`
+2. Frontend login, pages, users/admin flows
+3. If API calls fail, verify `VITE_API_URL` and backend `CORS_ORIGINS`
 
 ## Environment Variables
 
@@ -273,10 +310,13 @@ yarn test
 - `ACCESS_TOKEN_EXPIRE_MINUTES` - Access token expiration (default: 30)
 - `REFRESH_TOKEN_EXPIRE_DAYS` - Refresh token expiration (default: 7)
 - `CORS_ORIGINS` - Allowed CORS origins (comma-separated)
+- `ENVIRONMENT` - Environment name (`development` or `production`)
+- Production template: `backend/.env.production.example`
 
 ### Frontend
 
 - `VITE_API_URL` - Backend API URL
+- Production template: `frontend/.env.production.example`
 
 ## Key Features Implementation
 

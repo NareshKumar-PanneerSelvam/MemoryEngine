@@ -27,6 +27,16 @@ export interface AuthUser {
   role: UserRole;
 }
 
+export type AdminUser = AuthUser;
+
+export interface AdminCreateUserRequest {
+  email: string;
+  name: string;
+  username: string;
+  password: string;
+  role?: UserRole;
+}
+
 export interface RegisterRequest {
   email: string;
   name: string;
@@ -227,6 +237,17 @@ export const authApi = {
   async updateMe(payload: UpdateProfileRequest) {
     const response = await api.patch<AuthUser>("/api/auth/me", payload);
     return response.data;
+  },
+  async listUsers() {
+    const response = await api.get<AdminUser[]>("/api/admin/users");
+    return response.data;
+  },
+  async createUser(payload: AdminCreateUserRequest) {
+    const response = await api.post<AdminUser>("/api/admin/users", payload);
+    return response.data;
+  },
+  async deleteUser(userId: string) {
+    await api.delete(`/api/admin/users/${userId}`);
   },
 };
 

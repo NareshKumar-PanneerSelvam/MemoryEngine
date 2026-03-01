@@ -104,6 +104,45 @@ class UpdateProfileRequest(BaseModel):
         return self
 
 
+class AdminCreateUserRequest(BaseModel):
+    email: EmailStr
+    name: str = Field(min_length=1, max_length=255)
+    username: str = Field(min_length=3, max_length=30)
+    password: str = Field(min_length=8, max_length=72)
+    role: UserRole = UserRole.USER
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_strength(cls, password: str) -> str:
+        has_letter = any(char.isalpha() for char in password)
+        has_digit = any(char.isdigit() for char in password)
+        if not (has_letter and has_digit):
+            raise ValueError(
+                "Password must include at least one letter and one number."
+            )
+        return password
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, name: str) -> str:
+        value = name.strip()
+        if not value:
+            raise ValueError("Name cannot be empty.")
+        return value
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, username: str) -> str:
+        value = username.strip().lower()
+        if not value.replace("_", "").isalnum():
+            raise ValueError(
+                "Username can only contain letters, numbers, and underscores."
+            )
+        if value.startswith("_") or value.endswith("_"):
+            raise ValueError("Username cannot start or end with underscore.")
+        return value
+
+
 class AuthResponse(BaseModel):
     access_token: str
     refresh_token: str
