@@ -354,14 +354,14 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 6: Pages Frontend
 
-- [ ] 32. Create page type definitions
+- [x] 32. Create page type definitions
   - Create `src/types/page.ts` with Page, CreatePageRequest, UpdatePageRequest interfaces
   - Match backend schema exactly
   - Export all page-related types
   - _Requirements: 9.5_
   - **Commit message:** `feat: add TypeScript type definitions for pages`
 
-- [ ] 33. Add pages API functions
+- [x] 33. Add pages API functions
   - Add page API functions to `src/services/api.ts`
   - Implement `getPages()`, `getPage()`, `createPage()`, `updatePage()`, `deletePage()`
   - Implement `getChildPages()`, `sharePage()`, `revokeShare()`, `getPageShares()`
@@ -369,7 +369,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 9.1_
   - **Commit message:** `feat: add API functions for pages management`
 
-- [ ] 34. Create page tree navigation component
+- [x] 34. Create page tree navigation component
   - Create `src/components/PageTree/PageTree.tsx` component
   - Display pages in hierarchical tree structure
   - Implement expand/collapse functionality for parent pages
@@ -380,7 +380,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 1.3_
   - **Commit message:** `feat: create page tree navigation component`
 
-- [ ] 35. Create page list/dashboard page
+- [x] 35. Create page list/dashboard page
   - Create `src/pages/Dashboard.tsx` with page tree and main content area
   - Display PageTree component in sidebar
   - Show selected page content in main area
@@ -390,7 +390,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 1.3_
   - **Commit message:** `feat: create dashboard page with page tree navigation`
 
-- [ ] 36. Add create page modal/form
+- [x] 36. Add create page modal/form
   - Create `src/components/CreatePageModal.tsx` component
   - Add form fields: title, parent page (optional dropdown)
   - Validate title is not empty
@@ -400,7 +400,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 1.2_
   - **Commit message:** `feat: add create page modal with parent selection`
 
-- [ ] 37. Add delete page confirmation
+- [x] 37. Add delete page confirmation
   - Create `src/components/DeletePageModal.tsx` component
   - Show warning about cascade deletion of child pages
   - Require confirmation before deletion
@@ -419,7 +419,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 7: Rich Text Editor
 
-- [ ] 39. Set up Tiptap editor with Markdown support
+- [x] 39. Set up Tiptap editor with Markdown support
   - Create `src/components/Editor/TiptapEditor.tsx` component
   - Configure Tiptap with StarterKit extension
   - Add Markdown extension for syntax support
@@ -429,7 +429,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 2.1, 2.2_
   - **Commit message:** `feat: set up Tiptap editor with Markdown support`
 
-- [ ] 40. Implement dual-mode toggle (rich text / Markdown)
+- [x] 40. Implement dual-mode toggle (rich text / Markdown)
   - Add mode toggle button to editor toolbar
   - Implement rich text mode with formatted rendering
   - Implement Markdown mode with raw syntax display
@@ -446,7 +446,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Switch modes multiple times
   - Verify content is preserved
 
-- [ ] 41. Add editor toolbar with formatting options
+- [x] 41. Add editor toolbar with formatting options
   - Create `src/components/Editor/Toolbar.tsx` component
   - Add buttons for: bold, italic, code, headings, lists, blockquote
   - Add mode toggle button
@@ -455,7 +455,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 2.3_
   - **Commit message:** `feat: add editor toolbar with formatting controls`
 
-- [ ] 42. Implement auto-save functionality
+- [x] 42. Implement auto-save functionality
   - Add debounced auto-save (save after 2 seconds of no typing)
   - Call update page API on auto-save
   - Show "Saving..." and "Saved" indicators
@@ -463,7 +463,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 9.2_
   - **Commit message:** `feat: implement auto-save for page content`
 
-- [ ] 43. Create editor page with page content
+- [x] 43. Create editor page with page content
   - Create `src/pages/EditorPage.tsx` component
   - Load page content from API based on route parameter
   - Display TiptapEditor with loaded content
@@ -473,7 +473,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 2.1_
   - **Commit message:** `feat: create editor page with content loading`
 
-- [ ] 44. Integrate editor into dashboard
+- [x] 44. Integrate editor into dashboard
   - Update Dashboard to show editor when page is selected
   - Pass selected page to editor component
   - Update page tree when page title changes

@@ -5,6 +5,14 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
+import type {
+  CreatePageRequest,
+  Page,
+  PageShare,
+  SharePageRequest,
+  UpdatePageRequest,
+} from "../types/page";
+
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 export const ACCESS_TOKEN_KEY = "memoryengine.access_token";
 export const REFRESH_TOKEN_KEY = "memoryengine.refresh_token";
@@ -115,6 +123,7 @@ function resolvePendingRequests(error: unknown, token: string | null = null) {
 
     reject(new Error("No token received"));
   });
+
   pendingRequests = [];
 }
 
@@ -172,6 +181,7 @@ api.interceptors.response.use(
     }
 
     isRefreshing = true;
+
     try {
       const refreshed = await refreshAccessTokenRequest(refreshToken);
       storeAccessToken(refreshed.access_token);
@@ -219,5 +229,50 @@ export const authApi = {
     return response.data;
   },
 };
+
+export async function getPages(parentId?: string): Promise<Page[]> {
+  const response = await api.get<Page[]>("/api/pages", {
+    params: parentId ? { parent_id: parentId } : undefined,
+  });
+  return response.data;
+}
+
+export async function getPage(pageId: string): Promise<Page> {
+  const response = await api.get<Page>(`/api/pages/${pageId}`);
+  return response.data;
+}
+
+export async function createPage(payload: CreatePageRequest): Promise<Page> {
+  const response = await api.post<Page>("/api/pages", payload);
+  return response.data;
+}
+
+export async function updatePage(pageId: string, payload: UpdatePageRequest): Promise<Page> {
+  const response = await api.put<Page>(`/api/pages/${pageId}`, payload);
+  return response.data;
+}
+
+export async function deletePage(pageId: string): Promise<void> {
+  await api.delete(`/api/pages/${pageId}`);
+}
+
+export async function getChildPages(pageId: string): Promise<Page[]> {
+  const response = await api.get<Page[]>(`/api/pages/${pageId}/children`);
+  return response.data;
+}
+
+export async function sharePage(pageId: string, payload: SharePageRequest): Promise<PageShare> {
+  const response = await api.post<PageShare>(`/api/pages/${pageId}/share`, payload);
+  return response.data;
+}
+
+export async function revokeShare(pageId: string, sharedWithUserId: string): Promise<void> {
+  await api.delete(`/api/pages/${pageId}/share/${sharedWithUserId}`);
+}
+
+export async function getPageShares(pageId: string): Promise<PageShare[]> {
+  const response = await api.get<PageShare[]>(`/api/pages/${pageId}/shares`);
+  return response.data;
+}
 
 export { api };

@@ -1,120 +1,263 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { parseApiError, useAuth } from "../contexts/AuthContext";
+import { AxiosError } from "axios";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-function isValidUsername(username: string): boolean {
-  return /^[a-z0-9](?:[a-z0-9_]{1,28}[a-z0-9])?$/.test(username);
+import CreatePageModal from "../components/CreatePageModal";
+import DeletePageModal from "../components/DeletePageModal";
+import PageTree from "../components/PageTree/PageTree";
+import { createPage, deletePage, getPages } from "../services/api";
+import type { Page } from "../types/page";
+import EditorPage from "./EditorPage";
+
+function parseApiError(error: unknown): string {
+  if (error instanceof AxiosError) {
+    const detail = error.response?.data as { detail?: string } | undefined;
+    if (typeof detail?.detail === "string") {
+      return detail.detail;
+    }
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "Request failed";
+}
+
+function flattenPages(nodes: Page[]): Page[] {
+  return nodes.flatMap((node) => [node, ...flattenPages(node.children ?? [])]);
+}
+
+function updatePageInTree(nodes: Page[], updated: Page): Page[] {
+  return nodes.map((node) => {
+    if (node.id === updated.id) {
+      return {
+        ...node,
+        ...updated,
+        children: node.children,
+      };
+    }
+
+    return {
+      ...node,
+      children: updatePageInTree(node.children ?? [], updated),
+    };
+  });
 }
 
 export default function DashboardPage() {
-  const { user, updateProfile } = useAuth();
-  const [name, setName] = useState(user?.name ?? "");
-  const [username, setUsername] = useState(user?.username ?? "");
-  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
+  const { pageId } = useParams<{ pageId?: string }>();
+
+  const [pages, setPages] = useState<Page[]>([]);
+  const [loadingTree, setLoadingTree] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    setName(user?.name ?? "");
-    setUsername(user?.username ?? "");
-  }, [user?.name, user?.username]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [defaultCreateParentId, setDefaultCreateParentId] = useState<string | null>(
+    null,
+  );
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [isCreatingPage, setIsCreatingPage] = useState(false);
 
-  const handleSaveProfile = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Page | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeletingPage, setIsDeletingPage] = useState(false);
+
+  const allPages = useMemo(() => flattenPages(pages), [pages]);
+
+  const loadPages = useCallback(async (): Promise<Page[]> => {
+    setLoadingTree(true);
     setError(null);
-    setSuccess(null);
-
-    const normalizedName = name.trim();
-    const normalizedUsername = username.trim().toLowerCase();
-
-    if (!normalizedName) {
-      setError("Name cannot be empty.");
-      return;
-    }
-    if (!isValidUsername(normalizedUsername)) {
-      setError(
-        "Username must be 3-30 chars, lowercase letters/numbers/underscore, and cannot start/end with underscore.",
-      );
-      return;
-    }
-
     try {
-      setSaving(true);
-      await updateProfile({ name: normalizedName, username: normalizedUsername });
-      setSuccess("Profile updated successfully.");
+      const result = await getPages();
+      setPages(result);
+
+      const flattened = flattenPages(result);
+      if (flattened.length === 0) {
+        return [];
+      }
+
+      const selectedExists = pageId ? flattened.some((item) => item.id === pageId) : false;
+      if (!selectedExists) {
+        navigate(`/dashboard/${flattened[0].id}`, { replace: true });
+      }
+      return flattened;
     } catch (err) {
       setError(parseApiError(err));
+      return [];
     } finally {
-      setSaving(false);
+      setLoadingTree(false);
+    }
+  }, [navigate, pageId]);
+
+  useEffect(() => {
+    void loadPages();
+  }, [loadPages]);
+
+  const openCreateModal = (parentId?: string) => {
+    setCreateError(null);
+    setDefaultCreateParentId(parentId ?? null);
+    setIsCreateModalOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setDefaultCreateParentId(null);
+    setCreateError(null);
+  };
+
+  const handleCreatePage = async ({
+    title,
+    parentId,
+  }: {
+    title: string;
+    parentId: string | null;
+  }) => {
+    setIsCreatingPage(true);
+    setCreateError(null);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const createdPage = await createPage({ title, parent_id: parentId });
+      await loadPages();
+      navigate(`/dashboard/${createdPage.id}`);
+      setSuccessMessage(`Created "${createdPage.title}" successfully.`);
+      setSidebarOpen(false);
+      closeCreateModal();
+    } catch (err) {
+      setCreateError(parseApiError(err));
+    } finally {
+      setIsCreatingPage(false);
+    }
+  };
+
+  const openDeleteModal = (page: Page) => {
+    setDeleteTarget(page);
+    setDeleteError(null);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteTarget(null);
+    setDeleteError(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDeletePage = async () => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    setIsDeletingPage(true);
+    setDeleteError(null);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      await deletePage(deleteTarget.id);
+      const remaining = await loadPages();
+      if (remaining.length > 0) {
+        navigate(`/dashboard/${remaining[0].id}`);
+      } else {
+        navigate("/dashboard");
+      }
+
+      setSuccessMessage(`Deleted "${deleteTarget.title}" successfully.`);
+      closeDeleteModal();
+    } catch (err) {
+      setDeleteError(parseApiError(err));
+    } finally {
+      setIsDeletingPage(false);
     }
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          Dashboard
-        </h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-300">
-          Signed in as <span className="font-medium">{user?.email}</span> ({user?.role}).
-        </p>
-        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-          Next Phase 5 tasks will add pages CRUD and protected data features here.
-        </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 p-4 md:grid-cols-[320px_1fr] md:p-6">
+        <aside className={`md:block ${sidebarOpen ? "block" : "hidden"}`}>
+          <PageTree
+            pages={pages}
+            selectedPageId={pageId ?? null}
+            isLoading={loadingTree}
+            error={error}
+            onSelectPage={(page) => {
+              navigate(`/dashboard/${page.id}`);
+              setSidebarOpen(false);
+            }}
+            onCreatePage={openCreateModal}
+            onDeletePage={openDeleteModal}
+          />
+        </aside>
 
-        <div className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-800">
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-            Profile
-          </h2>
-          <form onSubmit={handleSaveProfile} className="mt-4 grid gap-4 md:max-w-lg">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Name
-              </span>
-              <input
-                type="text"
-                name="name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-slate-900/10 transition focus:border-slate-400 focus:ring-4 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-slate-500"
-                placeholder="Your name"
-              />
-            </label>
+        <main className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">Dashboard</h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSidebarOpen((value) => !value)}
+                className="rounded-md border border-gray-300 px-3 py-1.5 text-sm md:hidden"
+              >
+                {sidebarOpen ? "Close Tree" : "Open Tree"}
+              </button>
+              <button
+                onClick={() => openCreateModal(undefined)}
+                className="rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700"
+              >
+                New Root Page
+              </button>
+            </div>
+          </div>
 
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Username
-              </span>
-              <input
-                type="text"
-                name="username"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-slate-900/10 transition focus:border-slate-400 focus:ring-4 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-slate-500"
-                placeholder="e.g. naresh_dev"
-              />
-            </label>
+          {error ? (
+            <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </div>
+          ) : null}
 
-            {error ? (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                {error}
-              </div>
-            ) : null}
-            {success ? (
-              <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-                {success}
-              </div>
-            ) : null}
+          {successMessage ? (
+            <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+              {successMessage}
+            </div>
+          ) : null}
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-fit rounded-lg bg-slate-900 px-4 py-2.5 font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {saving ? "Saving..." : "Save profile"}
-            </button>
-          </form>
-        </div>
+          {allPages.length === 0 ? (
+            <div className="rounded-md border border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-center text-sm text-gray-500">
+              No pages created yet. Click "New Root Page" to start.
+            </div>
+          ) : (
+            <EditorPage
+              pages={pages}
+              onPageUpdated={(updated) => {
+                setPages((prev) => updatePageInTree(prev, updated));
+              }}
+            />
+          )}
+        </main>
       </div>
+
+      <CreatePageModal
+        key={`create-${isCreateModalOpen ? "open" : "closed"}-${defaultCreateParentId ?? "root"}`}
+        isOpen={isCreateModalOpen}
+        pages={pages}
+        defaultParentId={defaultCreateParentId}
+        isSubmitting={isCreatingPage}
+        error={createError}
+        onClose={closeCreateModal}
+        onSubmit={handleCreatePage}
+      />
+
+      <DeletePageModal
+        isOpen={isDeleteModalOpen}
+        page={deleteTarget}
+        isDeleting={isDeletingPage}
+        error={deleteError}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeletePage}
+      />
     </div>
   );
 }

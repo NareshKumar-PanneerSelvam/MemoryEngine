@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Link, Navigate, Route, Routes } from "react-router-dom";
+
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./contexts/AuthContext";
@@ -17,6 +18,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard/:pageId" element={<DashboardPage />} />
           </Route>
         </Routes>
       </div>
