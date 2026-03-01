@@ -18,3 +18,32 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+
+.ProseMirror p {
+  margin: 0 0 0.75rem;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  margin: 1rem 0 0.5rem;
+  font-weight: 600;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  margin: 0.5rem 0 0.75rem 1.25rem;
+}
+
+.ProseMirror blockquote {
+  margin: 0.75rem 0;
+  border-left: 3px solid #d1d5db;
+  padding-left: 0.75rem;
+  color: #4b5563;
+}
+
+.ProseMirror code {
+  border-radius: 0.25rem;
+  background: #f3f4f6;
+  padding: 0.1rem 0.3rem;
+}
