@@ -38,7 +38,7 @@ export default function LoginPage() {
     try {
       setLoading(true);
       await login(email.trim().toLowerCase(), password);
-      navigate(state?.from || "/dashboard", { replace: true });
+      navigate(state?.from || "/pages", { replace: true });
     } catch (err) {
       setError(parseApiError(err));
     } finally {
