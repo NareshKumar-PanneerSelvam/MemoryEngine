@@ -150,6 +150,29 @@ Run tests with coverage:
 poetry run pytest --cov=app
 ```
 
+## Render Deployment (Backend)
+
+Recommended: use the repository-level Render blueprint at `../render.yaml`.
+
+If you configure manually in Render Web Service:
+
+1. Root Directory: `backend`
+2. Build Command:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Start Command:
+
+```bash
+alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+4. Health check path: `/health`
+5. Add environment variables from `.env.production.example`
+6. Set `CORS_ORIGINS` to your Vercel frontend URL(s)
+
 ## Project Structure
 
 ```

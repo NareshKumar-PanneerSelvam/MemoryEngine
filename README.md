@@ -267,22 +267,23 @@ POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run alembic upgrade head
 
 ### 2) Backend (Render)
 
-1. Connect repository in Render and create a Web Service.
-2. Set Root Directory: `backend`
-3. Build command:
+1. Connect repository in Render.
+2. Use repo blueprint `render.yaml` (recommended), or create a Web Service manually with Root Directory `backend`.
+3. Manual build command:
 
 ```bash
-POETRY_VIRTUALENVS_IN_PROJECT=1 poetry install --no-root && POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run alembic upgrade head
+pip install -r requirements.txt
 ```
 
-4. Start command:
+4. Manual start command:
 
 ```bash
-POETRY_VIRTUALENVS_IN_PROJECT=1 poetry run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
 5. Add env vars from `backend/.env.production.example`.
 6. Set `CORS_ORIGINS` to include your frontend domain.
+7. Set health check path to `/health`.
 
 ### 3) Frontend (Vercel)
 
