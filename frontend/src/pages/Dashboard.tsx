@@ -10,7 +10,6 @@ import {
   createPage,
   deletePage,
   getPages,
-  pingHealth,
   updatePage,
 } from "../services/api";
 import type { Page } from "../types/page";
@@ -111,19 +110,6 @@ export default function DashboardPage() {
       navigate(`/pages/${allPages[0].id}`, { replace: true });
     }
   }, [allPages, loadingTree, navigate, pageId]);
-
-  useEffect(() => {
-    const intervalMs = 14 * 60 * 1000;
-    void pingHealth();
-
-    const timer = window.setInterval(() => {
-      void pingHealth();
-    }, intervalMs);
-
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, []);
 
   const openCreateModal = (parentId?: string) => {
     setCreateError(null);
