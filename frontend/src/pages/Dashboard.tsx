@@ -6,7 +6,13 @@ import CreatePageModal from "../components/CreatePageModal";
 import DeletePageModal from "../components/DeletePageModal";
 import PageTree from "../components/PageTree/PageTree";
 import { IconEdit, IconPanelLeft, IconPlus } from "../components/ui/icons";
-import { createPage, deletePage, getPages, updatePage } from "../services/api";
+import {
+  createPage,
+  deletePage,
+  getPages,
+  pingHealth,
+  updatePage,
+} from "../services/api";
 import type { Page } from "../types/page";
 import EditorPage from "./EditorPage";
 
@@ -56,7 +62,9 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [defaultCreateParentId, setDefaultCreateParentId] = useState<string | null>(null);
+  const [defaultCreateParentId, setDefaultCreateParentId] = useState<
+    string | null
+  >(null);
   const [createError, setCreateError] = useState<string | null>(null);
   const [isCreatingPage, setIsCreatingPage] = useState(false);
 
@@ -77,28 +85,45 @@ export default function DashboardPage() {
     try {
       const result = await getPages();
       setPages(result);
-
-      const flattened = flattenPages(result);
-      if (flattened.length === 0) {
-        return [];
-      }
-
-      const selectedExists = pageId ? flattened.some((item) => item.id === pageId) : false;
-      if (!selectedExists) {
-        navigate(`/pages/${flattened[0].id}`, { replace: true });
-      }
-      return flattened;
+      return flattenPages(result);
     } catch (err) {
       setError(parseApiError(err));
       return [];
     } finally {
       setLoadingTree(false);
     }
-  }, [navigate, pageId]);
+  }, []);
 
   useEffect(() => {
     void loadPages();
   }, [loadPages]);
+
+  useEffect(() => {
+    if (loadingTree || allPages.length === 0) {
+      return;
+    }
+
+    const selectedExists = pageId
+      ? allPages.some((item) => item.id === pageId)
+      : false;
+
+    if (!selectedExists) {
+      navigate(`/pages/${allPages[0].id}`, { replace: true });
+    }
+  }, [allPages, loadingTree, navigate, pageId]);
+
+  useEffect(() => {
+    const intervalMs = 14 * 60 * 1000;
+    void pingHealth();
+
+    const timer = window.setInterval(() => {
+      void pingHealth();
+    }, intervalMs);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, []);
 
   const openCreateModal = (parentId?: string) => {
     setCreateError(null);
@@ -244,7 +269,9 @@ export default function DashboardPage() {
 
           <main className="min-w-0 bg-slate-950 px-3 py-4 sm:px-5">
             <div className="mb-4 flex items-center justify-between gap-2">
-              <h1 className="text-xl font-semibold text-slate-100 sm:text-2xl">Pages</h1>
+              <h1 className="text-xl font-semibold text-slate-100 sm:text-2xl">
+                Pages
+              </h1>
 
               <div className="flex items-center gap-2">
                 <button
@@ -316,7 +343,9 @@ export default function DashboardPage() {
       {renameTarget ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/70 px-4">
           <div className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-2xl">
-            <h3 className="text-lg font-semibold text-slate-100">Rename page</h3>
+            <h3 className="text-lg font-semibold text-slate-100">
+              Rename page
+            </h3>
             <label className="mt-4 block text-sm font-medium text-slate-300">
               Page title
               <input

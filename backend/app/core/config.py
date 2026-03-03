@@ -18,7 +18,11 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str
     
     # CORS
-    CORS_ORIGINS: str = "http://localhost:5173"
+    CORS_ORIGINS: str = (
+        "http://localhost:5173,"
+        "http://localhost:3000,"
+        "https://memory-engine-seven.vercel.app"
+    )
     
     # Environment
     ENVIRONMENT: str = "development"
