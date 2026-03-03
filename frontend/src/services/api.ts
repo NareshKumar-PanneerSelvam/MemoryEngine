@@ -296,4 +296,8 @@ export async function getPageShares(pageId: string): Promise<PageShare[]> {
   return response.data;
 }
 
+export async function pingHealth(): Promise<void> {
+  await refreshClient.get("/health");
+}
+
 export { api };
