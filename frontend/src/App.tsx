@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Link, Navigate, Route, Routes } from "react-router-dom";
 
+import Health from "./components/Health";
 import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./contexts/AuthContext";
@@ -14,6 +15,7 @@ function App() {
     <Router>
       <div className="min-h-screen bg-slate-950">
         <Header />
+        <Health />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
