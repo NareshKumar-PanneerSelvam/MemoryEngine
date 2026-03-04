@@ -15,10 +15,11 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
-    allow_origin_regex=settings.CORS_ORIGIN_REGEX or None,
+    allow_origin_regex=settings.CORS_ORIGIN_REGEX if settings.CORS_ORIGIN_REGEX else None,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
     allow_headers=["*"],
+    max_age=600,
 )
 
 app.include_router(auth_router)
