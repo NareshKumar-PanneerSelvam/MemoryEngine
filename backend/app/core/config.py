@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     
     # Google Gemini API
     GEMINI_API_KEY: str
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MAX_TOKENS: int = 2048
+    GEMINI_TEMPERATURE: float = 0.7
+    AI_RATE_LIMIT_PER_MINUTE: int = 15
+    AI_RATE_LIMIT_PER_DAY: int = 1500
     
     # CORS
     CORS_ORIGINS: str = (
