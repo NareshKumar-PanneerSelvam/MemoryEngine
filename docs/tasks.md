@@ -483,7 +483,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 8: AI Service Backend
 
-- [ ] 45. Set up Google Gemini API client
+- [x] 45. Set up Google Gemini API client
   - Create `app/services/ai_service.py` with Gemini API integration
   - Configure API key from environment variables
   - Set up API client with free tier model (gemini-1.5-flash)
@@ -491,7 +491,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 11.1, 11.7_
   - **Commit message:** `feat: set up Google Gemini API client`
 
-- [ ] 46. Implement rate limiting for AI service
+- [x] 46. Implement rate limiting for AI service
   - Add rate limiter to AI service (15 requests/minute, 1500/day)
   - Track request counts in memory or Redis
   - Return appropriate error when rate limit exceeded
@@ -499,7 +499,8 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 11.2, 11.3_
   - **Commit message:** `feat: add rate limiting for AI service API calls`
 
-- [ ] 47. Implement AI text operations (rephrase, enhance, simplify)
+- [x] 47. Implement AI text operations (rephrase, enhance, simplify)
+  - Add ask ai button, User can able to fill the page by asking AI. for e.g. when user asked what are the topics I need to cover to become a Gen AI Engineer. it should fill the page with all the topics details.
   - Add `rephrase_text()` function with prompt template
   - Add `enhance_text()` function with prompt template
   - Add `simplify_text()` function with prompt template
@@ -515,7 +516,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Test all AI operations return parseable JSON
   - Verify response structure matches expected format
 
-- [ ] 48. Implement AI generation operations (questions, flashcards)
+- [x] 48. Implement AI generation operations (questions, flashcards)
   - Add `generate_questions()` function with prompt template
   - Add `generate_flashcards()` function with prompt template
   - Parse JSON responses into structured data
@@ -531,7 +532,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Verify questions array is non-empty
   - Verify flashcards have question and answer fields
 
-- [ ] 49. Implement image to Markdown conversion
+- [x] 49. Implement image to Markdown conversion
   - Add `image_to_markdown()` function with OCR prompt
   - Handle image upload (JPEG, PNG, HEIC formats)
   - Extract text using Gemini vision capabilities
@@ -547,7 +548,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - Test that output is valid Markdown
   - Verify Markdown can be parsed without errors
 
-- [ ] 50. Create AI operations router
+- [x] 50. Create AI operations router
   - Create `app/routers/ai.py` with AI endpoints
   - Implement POST `/api/ai/rephrase` endpoint
   - Implement POST `/api/ai/enhance` endpoint
