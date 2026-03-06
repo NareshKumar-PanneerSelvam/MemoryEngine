@@ -7,7 +7,13 @@ from collections import deque
 from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
-import google.generativeai as genai
+try:
+    import google.generativeai as genai
+except Exception as exc:  # pragma: no cover - depends on runtime/platform
+    genai = None
+    _GENAI_IMPORT_ERROR = str(exc)
+else:
+    _GENAI_IMPORT_ERROR = ""
 
 from app.core.config import settings
 
@@ -103,18 +109,28 @@ class InMemoryRateLimiter:
 
 class AIService:
     def __init__(self):
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        self._model = genai.GenerativeModel(
-            model_name=settings.GEMINI_MODEL,
-            generation_config=genai.GenerationConfig(
-                max_output_tokens=settings.GEMINI_MAX_TOKENS,
-                temperature=settings.GEMINI_TEMPERATURE,
-            ),
-        )
+        self._model = None
+        if genai is not None:
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            self._model = genai.GenerativeModel(
+                model_name=settings.GEMINI_MODEL,
+                generation_config=genai.GenerationConfig(
+                    max_output_tokens=settings.GEMINI_MAX_TOKENS,
+                    temperature=settings.GEMINI_TEMPERATURE,
+                ),
+            )
         self._limiter = InMemoryRateLimiter(
             per_minute=settings.AI_RATE_LIMIT_PER_MINUTE,
             per_day=settings.AI_RATE_LIMIT_PER_DAY,
         )
+
+    @staticmethod
+    def _assert_model_ready() -> None:
+        if genai is None:
+            raise AIServiceError(
+                f"AI service is unavailable due to SDK/runtime incompatibility: {_GENAI_IMPORT_ERROR}",
+                status_code=503,
+            )
 
     @staticmethod
     def _extract_json(raw: str) -> Any:
@@ -152,6 +168,7 @@ class AIService:
         content: Any,
         max_retries: int = 3,
     ) -> dict[str, Any]:
+        self._assert_model_ready()
         for attempt in range(max_retries):
             try:
                 await self._limiter.acquire(user_id)
