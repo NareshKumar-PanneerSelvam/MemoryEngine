@@ -563,7 +563,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
 
 ### Phase 9: AI Features Frontend
 
-- [ ] 51. Create AI operations API functions
+- [x] 51. Create AI operations API functions
   - Add AI API functions to `src/services/api.ts`
   - Implement `rephraseText()`, `enhanceText()`, `simplifyText()`
   - Implement `generateQuestions()`, `generateFlashcards()`
@@ -572,7 +572,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 3.1, 3.8_
   - **Commit message:** `feat: add AI operations API functions`
 
-- [ ] 52. Create AI operations context menu
+- [x] 52. Create AI operations context menu
   - Create `src/components/Editor/AIMenu.tsx` component
   - Show menu when text is selected in editor
   - Position menu near text selection
@@ -582,7 +582,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 3.1_
   - **Commit message:** `feat: create AI operations context menu for text selection`
 
-- [ ] 53. Implement AI text operations in editor
+- [x] 53. Implement AI text operations in editor
   - Connect AI menu to editor text selection
   - Call appropriate AI API based on selected operation
   - Replace selected text with AI result (for rephrase, enhance, simplify)
@@ -592,7 +592,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 3.2, 3.3, 3.4, 3.8_
   - **Commit message:** `feat: integrate AI text operations into editor`
 
-- [ ] 54. Implement AI question generation
+- [x] 54. Implement AI question generation
   - Add "Generate Questions" button to AI menu
   - Display generated questions in a modal or side panel
   - Allow user to copy questions to clipboard
@@ -600,7 +600,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 3.5_
   - **Commit message:** `feat: add AI-powered interview question generation`
 
-- [ ] 55. Implement AI flashcard generation
+- [x] 55. Implement AI flashcard generation
   - Add "Generate Flashcards" button to AI menu
   - Display generated flashcards in a modal
   - Allow user to review and edit flashcards before saving
@@ -609,7 +609,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 3.6, 6.4_
   - **Commit message:** `feat: add AI-powered flashcard generation`
 
-- [ ] 56. Add image upload for OCR conversion
+- [x] 56. Add image upload for OCR conversion
   - Create `src/components/ImageUpload.tsx` component
   - Add image upload button to editor toolbar
   - Support drag-and-drop for images
@@ -621,7 +621,7 @@ MemoryEngine is an AI-powered knowledge management system with hierarchical note
   - _Requirements: 4.1, 4.3, 4.4, 4.5_
   - **Commit message:** `feat: add image upload with OCR to Markdown conversion`
 
-- [ ] 57. Checkpoint - Test AI features
+- [x] 57. Checkpoint - Test AI features
   - Ensure all tests pass, ask the user if questions arise.
   - Verify text selection shows AI menu
   - Verify AI operations work (rephrase, enhance, simplify)

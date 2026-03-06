@@ -72,6 +72,62 @@ export interface AccessTokenResponse {
   expires_in: number;
 }
 
+export interface AITextRequest {
+  text: string;
+}
+
+export interface AITextResponse {
+  original: string;
+}
+
+export interface AIRephraseResponse extends AITextResponse {
+  rephrased: string;
+}
+
+export interface AIEnhanceResponse extends AITextResponse {
+  enhanced: string;
+}
+
+export interface AISimplifyResponse extends AITextResponse {
+  simplified: string;
+}
+
+export interface AIGenerateQuestionsRequest extends AITextRequest {
+  count?: number;
+}
+
+export interface AIGenerateQuestionsResponse {
+  questions: string[];
+}
+
+export interface AIGeneratedFlashcard {
+  question: string;
+  answer: string;
+}
+
+export interface AIGenerateFlashcardsRequest extends AITextRequest {
+  count?: number;
+}
+
+export interface AIGenerateFlashcardsResponse {
+  flashcards: AIGeneratedFlashcard[];
+}
+
+export interface AIImageToMarkdownResponse {
+  markdown: string;
+  confidence: number;
+}
+
+export class AIRateLimitError extends Error {
+  readonly retryAfterSeconds: number | null;
+
+  constructor(message: string, retryAfterSeconds: number | null = null) {
+    super(message);
+    this.name = "AIRateLimitError";
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
@@ -298,6 +354,117 @@ export async function getPageShares(pageId: string): Promise<PageShare[]> {
 
 export async function pingHealth(): Promise<void> {
   await refreshClient.get("/health");
+}
+
+function getApiErrorMessage(error: AxiosError, fallbackMessage: string): string {
+  const detail = (error.response?.data as { detail?: string } | undefined)?.detail;
+  if (typeof detail === "string" && detail.trim().length > 0) {
+    return detail;
+  }
+  return fallbackMessage;
+}
+
+function parseRetryAfterSeconds(error: AxiosError): number | null {
+  const retryAfterHeader = error.response?.headers?.["retry-after"];
+  if (typeof retryAfterHeader !== "string") {
+    return null;
+  }
+
+  const retryAfterSeconds = Number.parseInt(retryAfterHeader, 10);
+  return Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : null;
+}
+
+function handleAiApiError(error: unknown, fallbackMessage: string): never {
+  if (!axios.isAxiosError(error)) {
+    throw error;
+  }
+
+  if (error.response?.status === 429) {
+    const retryAfterSeconds = parseRetryAfterSeconds(error);
+    const retryMessage =
+      retryAfterSeconds !== null
+        ? ` Please wait ${retryAfterSeconds} seconds before trying again.`
+        : " Please try again in a moment.";
+    const message = `${getApiErrorMessage(error, "AI request limit reached.")}${retryMessage}`;
+    throw new AIRateLimitError(message, retryAfterSeconds);
+  }
+
+  throw new Error(getApiErrorMessage(error, fallbackMessage));
+}
+
+export async function rephraseText(payload: AITextRequest): Promise<AIRephraseResponse> {
+  try {
+    const response = await api.post<AIRephraseResponse>("/api/ai/rephrase", payload);
+    return response.data;
+  } catch (error) {
+    return handleAiApiError(error, "Unable to rephrase text right now.");
+  }
+}
+
+export async function enhanceText(payload: AITextRequest): Promise<AIEnhanceResponse> {
+  try {
+    const response = await api.post<AIEnhanceResponse>("/api/ai/enhance", payload);
+    return response.data;
+  } catch (error) {
+    return handleAiApiError(error, "Unable to enhance text right now.");
+  }
+}
+
+export async function simplifyText(payload: AITextRequest): Promise<AISimplifyResponse> {
+  try {
+    const response = await api.post<AISimplifyResponse>("/api/ai/simplify", payload);
+    return response.data;
+  } catch (error) {
+    return handleAiApiError(error, "Unable to simplify text right now.");
+  }
+}
+
+export async function generateQuestions(
+  payload: AIGenerateQuestionsRequest,
+): Promise<AIGenerateQuestionsResponse> {
+  try {
+    const response = await api.post<AIGenerateQuestionsResponse>(
+      "/api/ai/generate-questions",
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    return handleAiApiError(error, "Unable to generate questions right now.");
+  }
+}
+
+export async function generateFlashcards(
+  payload: AIGenerateFlashcardsRequest,
+): Promise<AIGenerateFlashcardsResponse> {
+  try {
+    const response = await api.post<AIGenerateFlashcardsResponse>(
+      "/api/ai/generate-flashcards",
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    return handleAiApiError(error, "Unable to generate flashcards right now.");
+  }
+}
+
+export async function imageToMarkdown(image: File): Promise<AIImageToMarkdownResponse> {
+  const formData = new FormData();
+  formData.append("image", image);
+
+  try {
+    const response = await api.post<AIImageToMarkdownResponse>(
+      "/api/ai/image-to-markdown",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    return handleAiApiError(error, "Unable to convert image to Markdown right now.");
+  }
 }
 
 export { api };
